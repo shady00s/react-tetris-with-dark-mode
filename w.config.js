@@ -52,6 +52,7 @@ var devPlugins =  [
   new CopyWebpackPlugin([
     { from: './src/resource/music/music.mp3' },
     { from: './src/resource/css/loader.css' },
+    { from: './src/dark-theme.css' },
   ]),
   // 热更新
   new webpack.HotModuleReplacementPlugin(),
@@ -77,6 +78,7 @@ var productionPlugins = [
   new CopyWebpackPlugin([
     { from: './src/resource/music/music.mp3' },
     { from: './src/resource/css/loader.css' },
+    { from: './src/dark-theme.css' },
   ]),
   // HTML 模板
   new HtmlWebpackPlugin({

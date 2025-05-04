@@ -1,0 +1,39 @@
+/* Dark theme styles */
+body.dark-theme {
+  background-color: #333 !important;
+}
+
+body.dark-theme ._2iZA, 
+body.dark-theme ._2lJh { 
+  color: black !important; 
+}
+
+body.dark-theme ._1pg0._23pZ._2TvZ i, 
+body.dark-theme ._1pg0._23pZ._2TvZ span,
+body.dark-theme ._1pg0._23pZ.p4fG i, 
+body.dark-theme ._1pg0._23pZ.p4fG span,
+body.dark-theme .J9SA, 
+body.dark-theme .nVeA, 
+body.dark-theme .DOXx, 
+body.dark-theme ._1fjB { 
+  background-color: #333 !important; 
+  color: white !important; 
+}
+
+body.dark-theme .nVeA > *, 
+body.dark-theme .DOXx > *, 
+body.dark-theme ._1fjB > * { 
+  color: #fff !important; 
+}
+
+body.dark-theme ._3Lk6 { 
+  background-color: rgb(51, 51, 51) !important; 
+}
+
+body.dark-theme .c { 
+  background-color: white !important; 
+}
+
+body.dark-theme ._3Lk6 span { 
+  color: white !important; 
+}

@@ -10,6 +10,21 @@
     <title>俄罗斯方块</title>
     <link href="./loader.css" rel="stylesheet" />
     <link href="./css.css" rel="stylesheet">
+    <link href="./dark-theme.css" rel="stylesheet">
+    <script>
+      // Immediately apply theme on page load
+      (function() {
+        var storedTheme = localStorage.getItem('tetris_theme');
+        var isDarkTheme = storedTheme ?
+          storedTheme === 'dark' :
+          window.location.search.includes('theme=dark');
+
+        if (isDarkTheme) {
+          document.body.style.backgroundColor = '#333';
+          document.body.classList.add('dark-theme');
+        }
+      })();
+    </script>
 </head>
 <body>
     <div id="root">

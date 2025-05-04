@@ -1,3 +1,7 @@
+/* eslint-disable max-len */
+/* eslint-disable no-param-reassign */
+/* eslint-disable  no-trailing-spaces */
+/* eslint-disable  padded-blocks */
 import React from 'react';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
@@ -23,26 +27,47 @@ import states from '../control/states';
 class App extends React.Component {
   constructor() {
     super();
+
+    // Check localStorage first, then URL for theme preference
+    const storedTheme = localStorage.getItem('tetris_theme');
+    const isDarkTheme = storedTheme ?
+      storedTheme === 'dark' :
+      window.location.search.includes('theme=dark');
+
     this.state = {
       w: document.documentElement.clientWidth,
       h: document.documentElement.clientHeight,
+      darkTheme: isDarkTheme,
     };
+    this.toggleLanguage = this.toggleLanguage.bind(this);
+    this.toggleTheme = this.toggleTheme.bind(this);
   }
+
+
   componentWillMount() {
     window.addEventListener('resize', this.resize.bind(this), true);
+    // Apply the theme based on state (which was set from localStorage or URL)
+    this.applyTheme(this.state.darkTheme);
   }
   componentDidMount() {
-    if (visibilityChangeEvent) { // 将页面的焦点变换写入store
+    if (visibilityChangeEvent) {
       document.addEventListener(visibilityChangeEvent, () => {
         states.focus(isFocus());
       }, false);
     }
 
-    if (lastRecord) { // 读取记录
-      if (lastRecord.cur && !lastRecord.pause) { // 拿到上一次游戏的状态, 如果在游戏中且没有暂停, 游戏继续
+    // Add theme script to head for immediate theme application
+    this.addThemeScript();
+
+    // Apply theme again after DOM is fully loaded
+    setTimeout(() => {
+      this.applyTheme(this.state.darkTheme);
+    }, 100);
+
+    if (lastRecord) {
+      if (lastRecord.cur && !lastRecord.pause) {
         const speedRun = this.props.speedRun;
-        let timeout = speeds[speedRun - 1] / 2; // 继续时, 给予当前下落速度一半的停留时间
-        // 停留时间不小于最快速的速度
+        let timeout = speeds[speedRun - 1] / 2;
         timeout = speedRun < speeds[speeds.length - 1] ? speeds[speeds.length - 1] : speedRun;
         states.auto(timeout);
       }
@@ -53,12 +78,144 @@ class App extends React.Component {
       states.overStart();
     }
   }
+
+  // Add a script to the document head to apply theme immediately on page load
+  addThemeScript() {
+    // Add dark theme CSS file
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/src/dark-theme.css';
+    document.head.appendChild(link);
+
+    // Add script to apply theme class to body
+    const script = document.createElement('script');
+    script.textContent = `
+      (function() {
+        var storedTheme = localStorage.getItem('tetris_theme');
+        var isDarkTheme = storedTheme ?
+          storedTheme === 'dark' :
+          window.location.search.includes('theme=dark');
+
+        if (isDarkTheme) {
+          document.body.style.backgroundColor = '#333';
+          document.body.classList.add('dark-theme');
+        }
+      })();
+    `;
+    document.head.appendChild(script);
+  }
+  toggleLanguage() {
+    const newLan = lan === 'en' ? 'zh' : 'en';
+    const currentTheme = this.state.darkTheme ? 'dark' : 'light';
+
+    // Save current theme to localStorage before navigating
+    localStorage.setItem('tetris_theme', currentTheme);
+
+    // Create a hidden form and submit it to preserve the theme across page reloads
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = window.location.pathname;
+
+    // Add language parameter
+    const lanInput = document.createElement('input');
+    lanInput.type = 'hidden';
+    lanInput.name = 'lan';
+    lanInput.value = newLan;
+    form.appendChild(lanInput);
+
+    // Add theme parameter
+    const themeInput = document.createElement('input');
+    themeInput.type = 'hidden';
+    themeInput.name = 'theme';
+    themeInput.value = currentTheme;
+    form.appendChild(themeInput);
+
+    // Append form to body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  toggleTheme() {
+    const newTheme = !this.state.darkTheme;
+    this.setState({ darkTheme: newTheme });
+    this.applyTheme(newTheme);
+    // Preserve the current language when updating the URL
+    window.history.replaceState(null, '', `?lan=${lan}&theme=${newTheme ? 'dark' : 'light'}`);
+  }
+
+  applyTheme(isDark) {
+    // Store the theme preference in localStorage so it persists across page reloads
+    localStorage.setItem('tetris_theme', isDark ? 'dark' : 'light');
+
+    if (isDark) {
+      // Apply dark theme by adding class to body
+      document.body.style.backgroundColor = '#333';
+      document.body.classList.add('dark-theme');
+      
+      // Force immediate style application for specific elements
+      document.querySelectorAll('._2iZA, ._2lJh').forEach(el => {
+        el.style.color = 'black';
+      });
+      document.querySelectorAll('._1pg0._23pZ._2TvZ i, ._1pg0._23pZ._2TvZ span, ._1pg0._23pZ.p4fG i, ._1pg0._23pZ.p4fG span, .J9SA, .nVeA, .DOXx, ._1fjB').forEach(el => {
+        el.style.backgroundColor = '#333';
+        el.style.color = 'white';
+      });
+      document.querySelectorAll('.nVeA > *, .DOXx > *, ._1fjB > *').forEach(el => {
+        el.style.color = '#fff';
+      });
+      document.querySelectorAll('._3Lk6').forEach(el => {
+        el.style.backgroundColor = 'rgb(51, 51, 51)';
+      });
+      document.querySelectorAll('.c').forEach(el => {
+        el.style.backgroundColor = 'white';
+      });
+      document.querySelectorAll('._3Lk6 span').forEach(el => {
+        el.style.color = 'white';
+      });
+      document.querySelectorAll('._6pVK b').forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.color = '';
+      });
+    } else {
+      // Force immediate style application for specific elements
+      document.querySelectorAll('._2iZA, ._2lJh, ._6pVK b').forEach(el => {
+        el.style.color = 'black';
+      });
+      document.querySelectorAll('._6pVK b').forEach(el => {
+        el.style.backgroundColor = 'black';
+      });
+
+      // Remove dark theme class from body
+      document.body.style.backgroundColor = '#009688';
+      document.body.classList.remove('dark-theme');
+
+      // Reset styles directly on elements
+      document.querySelectorAll('._1pg0._23pZ._2TvZ i, ._1pg0._23pZ._2TvZ span, ._1pg0._23pZ.p4fG i, ._1pg0._23pZ.p4fG span, .J9SA, .nVeA, .DOXx, ._1fjB').forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.color = '';
+      });
+      document.querySelectorAll('.c').forEach(el => {
+        el.style.backgroundColor = '';
+      });
+      document.querySelectorAll('.nVeA > *, .DOXx > *, ._1fjB > *').forEach(el => {
+        el.style.color = '';
+      });
+      document.querySelectorAll('._3Lk6').forEach(el => {
+        el.style.backgroundColor = '';
+      });
+      document.querySelectorAll('._3Lk6 span').forEach(el => {
+        el.style.color = 'black';
+      });
+    }
+  }
+
   resize() {
     this.setState({
       w: document.documentElement.clientWidth,
       h: document.documentElement.clientHeight,
     });
   }
+
   render() {
     let filling = 0;
     const size = (() => {
@@ -87,6 +244,18 @@ class App extends React.Component {
         className={style.app}
         style={size}
       >
+        <button
+          className={style.languageToggle}
+          onClick={this.toggleLanguage}
+        >
+          {lan === 'en' ? '中文' : 'EN'}
+        </button>
+        <button
+          className={style.themeToggle}
+          onClick={this.toggleTheme}
+        >
+          {this.state.darkTheme ? '☀️' : '🌙'}
+        </button>
         <div className={classnames({ [style.rect]: true, [style.drop]: this.props.drop })}>
           <Decorate />
           <div className={style.screen}>

@@ -94,9 +94,10 @@ const transform = (function () {
 const eachLines = 20; // 每消除eachLines行, 增加速度
 
 const getParam = (param) => { // 获取浏览器参数
-  const r = new RegExp(`\\?(?:.+&)?${param}=(.*?)(?:&.*)?$`);
-  const m = window.location.toString().match(r);
-  return m ? decodeURI(m[1]) : '';
+  // Create a URLSearchParams object from the current URL's query string
+  const urlParams = new URLSearchParams(window.location.search);
+  // Get the value of the specified parameter
+  return urlParams.get(param) || '';
 };
 
 const lan = (() => {
